@@ -1,0 +1,15 @@
+body {
+  background-image: url("../assets/image/background/page/gothic_design_dark.jpg");
+  background-repeat: repeat-x;
+  background-attachment: fixed;
+  background-position: top;
+
+  font-family: Beeb;
+  font-size: 0.8em;
+  color: #fff;
+  background-color: #000;
+}
+
+#main-container {
+  max-width: 100% !important;
+}

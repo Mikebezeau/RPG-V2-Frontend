@@ -1,0 +1,19 @@
+@font-face {
+  font-family: "Beeb";
+  src: local("Beeb"), url("../assets/font/beeb-webfont.ttf") format("truetype");
+  font-weight: normal;
+}
+
+@font-face {
+  font-family: "Exocet";
+  src: local("Exocet2"),
+    url("../assets/font/exocet2-webfont.ttf") format("truetype");
+  font-weight: normal;
+}
+
+@font-face {
+  font-family: "ExocetBold";
+  src: local("Exocet1"),
+    url("../assets/font/exocet1-webfont.ttf") format("truetype");
+  font-weight: normal;
+}
