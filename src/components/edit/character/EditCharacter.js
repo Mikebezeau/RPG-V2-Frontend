@@ -8,7 +8,7 @@ import {
   ShowAncestryAttributeBoostFlaw,
 } from "./SelectAttributeBoost";
 import DynamicObjInputs from "../form/DynamicObjInputs";
-import { getInputValue } from "../../../util/utilFunctions";
+import { getInputValue, FormatText } from "../../../util/utilFunctions";
 import * as C from "../../../data/constants/dataDictionaryConstants";
 
 import { Modal } from "../../modal";
@@ -23,11 +23,13 @@ const EditCharacter = () => {
   const [showModal, setShowModal] = useState(false);
   const [modalContents, setModalContents] = useState(<></>);
 
-  const openModal = () => {
+  const openModal = (title, content) => {
     setModalContents(
-      <>
-        <h2>Hello</h2>
-      </>
+      <div style={{ fontFamily: "Arial" }}>
+        <u>{title}</u>
+        <br />
+        {FormatText(content)}
+      </div>
     );
     setShowModal(true);
   };
@@ -71,12 +73,13 @@ const EditCharacter = () => {
       (thisClass) => thisClass.class_id === classId
     );
     characterMenu.setProp("class", newClass);
+    console.log(newClass);
     const characterAttributeBoosts = removeAttributeBoostSelection(
       C.ATTRIBUTE_BOOST_TYPE.class_optional,
       true
     );
     //if only one option for class boost, add it to character's list
-    if (newClass.class_attribute_boosts.length === 1) {
+    if (newClass?.class_attribute_boosts?.length === 1) {
       characterAttributeBoosts.push({
         character_id: Number(id),
         attribute_id: newClass.class_attribute_boosts[0].attribute_id,
@@ -232,7 +235,6 @@ const EditCharacter = () => {
         <Row>
           <Col>
             <button onClick={updateCharacter}>Update</button>
-            <button onClick={openModal}>Open Modal</button>
           </Col>
         </Row>
         <hr />
@@ -264,7 +266,7 @@ const EditCharacter = () => {
                       .find(
                         (charClass) => charClass.class_id === character.class_id
                       )
-                      .class_specialties.map((specialty, i) => (
+                      ?.class_specialties.map((specialty, i) => (
                         <option key={i} value={specialty.class_specialty_id}>
                           {specialty.class_specialty_name}
                         </option>
@@ -275,62 +277,68 @@ const EditCharacter = () => {
             </Row>
             <Row>
               <Col>Ancestry</Col>
-              <Col>
-                <select
-                  name="ancestry_id"
-                  onChange={handleAncestryChange}
-                  value={character.ancestry_id}
-                >
-                  <option value={0}>Select Ancestry</option>
-                  {ancestryList.map((ancestry, i) => (
-                    <option key={i} value={ancestry.ancestry_id}>
-                      {ancestry.ancestry_name}
-                    </option>
-                  ))}
-                </select>
-              </Col>
+              {ancestryList[0] && (
+                <Col>
+                  <select
+                    name="ancestry_id"
+                    onChange={handleAncestryChange}
+                    value={character.ancestry_id}
+                  >
+                    <option value={0}>Select Ancestry</option>
+                    {ancestryList.map((ancestry, i) => (
+                      <option key={i} value={ancestry.ancestry_id}>
+                        {ancestry.ancestry_name}
+                      </option>
+                    ))}
+                  </select>
+                </Col>
+              )}
             </Row>
             <Row>
               <Col>Heritage</Col>
-              <Col>
-                <select
-                  name="heritage_id"
-                  onChange={handleHeritageChange}
-                  value={character.heritage_id}
-                >
-                  <option value={0}>Select Heritage</option>
-                  {heritageList
-                    .filter(
-                      (heritage) =>
-                        heritage.ancestry_id === character.ancestry_id
-                    )
-                    .map((heritage, i) => (
-                      <option key={i} value={heritage.heritage_id}>
-                        {heritage.heritage_name}
-                      </option>
-                    ))}
-                </select>
-              </Col>
+              {heritageList[0] && (
+                <Col>
+                  <select
+                    name="heritage_id"
+                    onChange={handleHeritageChange}
+                    value={character.heritage_id}
+                  >
+                    <option value={0}>Select Heritage</option>
+                    {heritageList
+                      .filter(
+                        (heritage) =>
+                          heritage.ancestry_id === character.ancestry_id
+                      )
+                      .map((heritage, i) => (
+                        <option key={i} value={heritage.heritage_id}>
+                          {heritage.heritage_name}
+                        </option>
+                      ))}
+                  </select>
+                </Col>
+              )}
             </Row>
             <Row>
               <Col>Background</Col>
-              <Col>
-                <select
-                  name="background_id"
-                  onChange={handleBackgroundChange}
-                  value={character.background_id}
-                >
-                  <option value={0}>Select Background</option>
-                  {backgroundList.map((background, i) => (
-                    <option key={i} value={background.background_id}>
-                      {background.background_name}
-                    </option>
-                  ))}
-                </select>
-              </Col>
+              {backgroundList[0] && (
+                <Col>
+                  <select
+                    name="background_id"
+                    onChange={handleBackgroundChange}
+                    value={character.background_id}
+                  >
+                    <option value={0}>Select Background</option>
+                    {backgroundList.map((background, i) => (
+                      <option key={i} value={background.background_id}>
+                        {background.background_name}
+                      </option>
+                    ))}
+                  </select>
+                </Col>
+              )}
             </Row>
             <hr />
-            {character.getSkillRank &&
+            {character.character_attribute_boosts &&
               Object.values(C.ATTRIBUTE_TYPE).map((attribute, i) => (
                 <Row key={i}>
                   <Col>{attribute.name}:</Col>
@@ -338,7 +346,7 @@ const EditCharacter = () => {
                 </Row>
               ))}
             <hr />
-            {character.getSkillRank &&
+            {character.character_skill_increases &&
               Object.values(skillList)
                 .filter((skill) => skill.skill_id <= 17)
                 .map((skill, i) => {
@@ -355,63 +363,71 @@ const EditCharacter = () => {
                   );
                 })}
           </Col>
-          {character.ancestry && (
-            <Col md={3} lg={3}>
-              <Row>
-                <Col>Attribute Boosts</Col>
-              </Row>
-              <hr />
+          <Col md={3} lg={3}>
+            <Row>
+              <Col>Attribute Boosts</Col>
+            </Row>
+            <hr />
 
-              <Row>
-                <Col>Ancestry</Col>
-              </Row>
+            <Row>
+              <Col>Ancestry</Col>
+            </Row>
 
-              <Row>
-                <Col>
-                  <SelectAttributeBoost
-                    num_boosts={character.ancestry.num_free_attr_boost}
-                    boost_type_const_value={
-                      C.ATTRIBUTE_BOOST_TYPE.free_ancestry
-                    }
-                    handleChange={handleAttributeBoostChange}
-                    level={1}
-                    character={character}
-                  />
-                  <ShowAncestryAttributeBoostFlaw character={character} />
-                </Col>
-              </Row>
+            <Row>
+              <Col>
+                {character.ancestry?.num_free_attr_boost && (
+                  <>
+                    <SelectAttributeBoost
+                      num_boosts={character.ancestry.num_free_attr_boost}
+                      boost_type_const_value={
+                        C.ATTRIBUTE_BOOST_TYPE.free_ancestry
+                      }
+                      handleChange={handleAttributeBoostChange}
+                      level={1}
+                      character={character}
+                    />
+                    <ShowAncestryAttributeBoostFlaw character={character} />
+                  </>
+                )}
+              </Col>
+            </Row>
 
-              <Row>
-                <Col>Background</Col>
-              </Row>
-              <Row>
-                <Col>
-                  <SelectAttributeBoost
-                    num_boosts={1}
-                    boost_type_const_value={
-                      C.ATTRIBUTE_BOOST_TYPE.free_background
-                    }
-                    handleChange={handleAttributeBoostChange}
-                    level={1}
-                    character={character}
-                  />
-                  <SelectAttributeBoost
-                    num_boosts={1}
-                    attribute_list={
-                      character.background.background_attribute_boosts
-                    }
-                    boost_type_const_value={C.ATTRIBUTE_BOOST_TYPE.background}
-                    handleChange={handleAttributeBoostChange}
-                    level={1}
-                    character={character}
-                  />
-                </Col>
-              </Row>
-              <Row>
-                <Col>Class</Col>
-              </Row>
-              <Row>
-                <Col>
+            <Row>
+              <Col>Background</Col>
+            </Row>
+            <Row>
+              <Col>
+                {character.background?.background_attribute_boosts && (
+                  <>
+                    <SelectAttributeBoost
+                      num_boosts={1}
+                      boost_type_const_value={
+                        C.ATTRIBUTE_BOOST_TYPE.free_background
+                      }
+                      handleChange={handleAttributeBoostChange}
+                      level={1}
+                      character={character}
+                    />
+                    <SelectAttributeBoost
+                      num_boosts={1}
+                      attribute_list={
+                        character.background.background_attribute_boosts
+                      }
+                      boost_type_const_value={C.ATTRIBUTE_BOOST_TYPE.background}
+                      handleChange={handleAttributeBoostChange}
+                      level={1}
+                      character={character}
+                    />
+                  </>
+                )}
+              </Col>
+            </Row>
+            <Row>
+              <Col>Class</Col>
+            </Row>
+            <Row>
+              <Col>
+                {character.class?.class_attribute_boosts && (
                   <SelectAttributeBoost
                     num_boosts={1}
                     attribute_list={character.class.class_attribute_boosts}
@@ -422,14 +438,16 @@ const EditCharacter = () => {
                     level={1}
                     character={character}
                   />
-                </Col>
-              </Row>
+                )}
+              </Col>
+            </Row>
 
-              <Row>
-                <Col>Starting Boosts</Col>
-              </Row>
-              <Row>
-                <Col>
+            <Row>
+              <Col>Starting Boosts</Col>
+            </Row>
+            <Row>
+              <Col>
+                {character.character_attribute_boosts && (
                   <SelectAttributeBoost
                     num_boosts={4}
                     boost_type_const_value={C.ATTRIBUTE_BOOST_TYPE.level}
@@ -437,46 +455,84 @@ const EditCharacter = () => {
                     level={1}
                     character={character}
                   />
-                </Col>
-              </Row>
-              <hr />
-              {[...Array(character.level)].map((el, i) => (
-                <>
+                )}
+              </Col>
+            </Row>
+            {character.level &&
+              [...Array(character.level)].map((el, i) => (
+                <div key={i}>
+                  <Row>
+                    <Col>
+                      <hr />
+                    </Col>
+                  </Row>
                   <Row>
                     <Col>Level {i + 1}</Col>
                   </Row>
 
-                  {character.class_specialty?.abilities
-                    ?.filter(
-                      (ability) =>
-                        ability.class_specialty_ability.level_gained === i + 1
-                    )
-                    .map((ability) => {
-                      return (
-                        <>
-                          {i === 0 ?? (
-                            <>
-                              <Row>
-                                <Col>Class Abilities</Col>
-                              </Row>
-                              <hr style={{ width: "75%" }} />
-                            </>
-                          )}
-                          <Row>
-                            <Col>{ability.ability_name}</Col>
-                          </Row>
-                          <br />
-                          <Row>
-                            <Col>{ability.ability_description}</Col>
-                          </Row>
-                          <hr />
-                        </>
-                      );
-                    })}
-                </>
+                  {
+                    //FIND ALL CLASS SPECIALTY ABILITIES FOR THIS LEVEL
+                    character.class?.abilities
+                      ?.filter(
+                        (ability) =>
+                          ability.class_ability.level_gained === i + 1
+                      )
+                      .map((ability, j) => {
+                        return (
+                          <div key={j}>
+                            {j === 0 && <br />}
+
+                            <Row>
+                              <Col>
+                                <button
+                                  onClick={() =>
+                                    openModal(
+                                      ability.ability_name,
+                                      ability.ability_description
+                                    )
+                                  }
+                                >
+                                  {ability.ability_name}
+                                </button>
+                              </Col>
+                            </Row>
+                          </div>
+                        );
+                      })
+                  }
+                  {
+                    //FIND ALL CLASS SPECIALTY ABILITIES FOR THIS LEVEL
+                    character.class_specialty?.abilities
+                      ?.filter(
+                        (ability) =>
+                          ability.class_specialty_ability.level_gained === i + 1
+                      )
+                      .map((ability, j) => {
+                        return (
+                          <div key={j}>
+                            {j === 0 && <br />}
+                            <Row>
+                              <Col>
+                                <button
+                                  onClick={() =>
+                                    openModal(
+                                      ability.ability_name,
+                                      ability.ability_description
+                                    )
+                                  }
+                                >
+                                  {ability.ability_name}
+                                </button>
+                              </Col>
+                            </Row>
+                          </div>
+                        );
+                      })
+                  }
+                </div>
               ))}
-            </Col>
-          )}
+          </Col>
+
           <Col
             md={4}
             lg={4}

@@ -2,7 +2,7 @@ import create from "zustand";
 import axios from "axios";
 import { CONFIG } from "../constants/configConstants";
 
-const [dbStore] = create((set, get) => ({
+const dbStore = create((set, get) => ({
   ancestryList: [],
   backgroundList: [],
   heritageList: [],

@@ -17,10 +17,10 @@ export class Character {
 
   //skill
   getSkillRank = (skillId) => {
-    const result = this.character_skills.find(
+    const result = this.character_skill_increases.filter(
       (skill) => skill.skill_id === skillId
     );
-    if (result) return result.skill_rank;
+    if (result) return result.length;
     return 0;
   };
 

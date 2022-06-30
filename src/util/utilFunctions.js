@@ -19,3 +19,7 @@ export const getInputValue = (e) => {
   }
   return val;
 };
+
+export const FormatText = (text) => {
+  return text.split("\n").map((str, i) => <p key={i}>{str}</p>);
+};

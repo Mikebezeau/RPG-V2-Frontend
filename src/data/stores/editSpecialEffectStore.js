@@ -3,7 +3,7 @@ import axios from "axios";
 import { SPECIAL_TYPE } from "../constants/editSpecialEffectConstants";
 import { CONFIG } from "../constants/configConstants";
 
-const [specialEffectStore] = create((set, get) => ({
+const specialEffectStore = create((set, get) => ({
   effects: [],
 
   effectMenu: {

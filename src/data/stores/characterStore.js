@@ -3,7 +3,7 @@ import axios from "axios";
 import { CONFIG } from "../constants/configConstants";
 import { Character } from "../classes/character";
 
-const [characterStore] = create((set, get) => ({
+const characterStore = create((set, get) => ({
   character: {}, //editCharacter
 
   characterList: [],

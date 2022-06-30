@@ -4,6 +4,7 @@ import {
 } from "../../../data/constants/dataDictionaryConstants";
 
 export const SelectAttributeBoost = (props) => {
+  //list for disabling options in selections for those attributes that have already been selected in that category
   let attributeList = [
     { id: 1, disable: 0 },
     { id: 2, disable: 0 },
@@ -17,14 +18,14 @@ export const SelectAttributeBoost = (props) => {
       return { id: attribute.attribute_id, disable: 0 };
     });
   }
-  //list of character selected boosts for this level, to give values
+  //list of character selected boosts for this level, to give values to select boxes
   const boosts = props.character.character_attribute_boosts.filter(
     (boost) =>
       boost.boost_type_const_value === props.boost_type_const_value &&
       boost.level === props.level
   );
 
-  //disable options that have already een selected by other boosts for this level/category
+  //disable options that have already been selected by other boosts for this level/category
   //don't forget to include ancestry boosts (ignore flaws) if selecting ancestry free boost
   let selectedBoosts = boosts;
 
@@ -35,7 +36,7 @@ export const SelectAttributeBoost = (props) => {
       )
     );
 
-  //different for background boosts
+  //different for background boosts because one of the selections is limited to 2 attribute choices
   if (
     props.boost_type_const_value === ATTRIBUTE_BOOST_TYPE.background ||
     props.boost_type_const_value === ATTRIBUTE_BOOST_TYPE.free_background
